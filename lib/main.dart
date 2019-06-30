@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -7,7 +8,11 @@ import 'package:http/http.dart' as http;
 void main() {
   runApp(MaterialApp(
     initialRoute: '/',
-    routes: {'/': (context) => Signup(), '/check': (context) => Check()},
+    routes: {
+      '/': (context) => SplashScreen(),
+      '/signup': (context) => Signup(),
+      '/check': (context) => Check(),
+    },
     title: 'Flutter Tutorial',
     // home: TutorialHome(),
     theme: ThemeData(primaryColor: Colors.white),
@@ -16,6 +21,7 @@ void main() {
 
 class Signup extends StatelessWidget {
   final myController = TextEditingController();
+  // var focusphone = new FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +112,7 @@ class Signup extends StatelessWidget {
                       child: Container(
                           width: 300,
                           child: TextField(
+                            // focusNode: focusphone,
                             controller: myController,
                             textInputAction: TextInputAction.go,
                             style: TextStyle(color: Colors.black),
@@ -134,33 +141,56 @@ class Signup extends StatelessWidget {
         backgroundColor: Colors.redAccent,
         elevation: 200.0,
         onPressed: () {
-            // print(myController.text[0].runtimeType);
-          if (myController.text != null && myController.text[0] == "9" && myController.text.length == 10) {
 
-          Map data = {'phone_number': '+98' + myController.text};
-          Future<http.Response> sendnumber() {
-            http.post('http://bookstack.spsina.ir/api/v1/login/',
-                body: json.encode(data),
-                headers: {
-                  "Accept": "application/json",
-                  "content-type": "application/json"
+          if (myController.text != null &&
+              myController.text[0] == "9" &&
+              myController.text.length == 10) {
+
+            Map data = {'phone_number': '+98' + myController.text};
+            showDialog(
+                
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    contentPadding: EdgeInsets.all(0.0),
+                    titlePadding: EdgeInsets.all(0.0),
+                    content: Container(
+                      child: Image.asset('images/loader.gif'),
+                      height: 100,
+                      width: 100,
+                    )
+                  );
                 });
+            Future<http.Response> sendnumber() async {
+            http.post(
+                  'http://bookstack.spsina.ir/api/v1/login/',
+                  body: json.encode(data),
+                  headers: {
+                    "Accept": "application/json",
+                    "content-type": "application/json"
+                  }).then((http.Response response) {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(
+                      context,
+                      '/check',
+                    );
+                  });
 
-            // return showDialog(
-            //     context: context,
-            //     builder: (context) {
-            //       return AlertDialog(
-            //         content: Text('done'),
-            //       );
-            //     });
-            Navigator.pushNamed(
-              context,
-              '/check',
-            );
-          }
+              
 
-          sendnumber();
-        }},
+              // return showDialog(
+              //     context: context,
+              //     builder: (context) {
+              //       return AlertDialog(
+              //         content: Text('done'),
+              //       );
+              //     });
+              
+            }
+
+            sendnumber();
+          } else {}
+        },
       ),
       // bottomNavigationBar: BottomAppBar(
       //   color: Color(0xFFfafafa), child: Container(height: 50,),),
@@ -241,6 +271,84 @@ class Check extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
           }),
+    );
+  }
+}
+
+////////////////   SPLASH SCREEN   /////////////////
+
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(Duration(seconds: 5), () => Navigator.pushNamed(context, '/signup'));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Container(
+            decoration: BoxDecoration(color: Colors.redAccent),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                flex: 2,
+                child: Container(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Image.asset('images/gif.gif'),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10.0),
+                      ),
+                      Text(
+                        'rfw',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24.0),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    CircularProgressIndicator(
+                      backgroundColor: Colors.red,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 20.0),
+                    ),
+                    Text(
+                      'sdvdfvev',
+                      softWrap: true,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0,
+                          color: Colors.white),
+                    )
+                  ],
+                ),
+              )
+            ],
+          )
+        ],
+      ),
     );
   }
 }

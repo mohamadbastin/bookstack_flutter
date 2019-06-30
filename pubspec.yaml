@@ -28,6 +28,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  async_loader: ^0.1.1
 
 #   flutter_launcher_icons:
 #     path: "/Users/mohamad/Desktop/dev/BookStackFlutter/book_stack/book_stack/"
@@ -55,6 +56,8 @@ flutter:
    - images/bookstack_logo_red.png
    - images/bookstack_logo_white.png
    - images/bookstack_logo_green.png
+   - images/gif.gif
+   - images/loader.gif
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
